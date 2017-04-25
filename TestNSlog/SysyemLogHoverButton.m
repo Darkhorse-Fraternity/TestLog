@@ -115,16 +115,51 @@
     }
 }
 
-
+-(void )showToastView
+{
+    UIWindow *window = [[UIApplication sharedApplication]keyWindow];
+    if(self.toastLable == nil){
+        UILabel *toast = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 200, 100)];
+        self.toastLable = toast;
+        id webServer = [[HttpServerLogger shared]valueForKey:@"webServer"];
+        NSString *url = [webServer valueForKey:@"serverURL"];
+        
+        self.toastLable.text = @"请在同一Wifi下打开 游览器：输入您的ip+端口号8080查看log日志:";
+       NSString *toastText = [NSString stringWithFormat:@"%@%@",self.toastLable.text,url];
+        self.toastLable.text = toastText;
+        self.toastLable.textColor = [UIColor whiteColor];
+        self.toastLable.numberOfLines = 0;
+        toast.center = window.center;
+        toast.backgroundColor = [UIColor redColor];
+        toast.layer.shadowColor=[UIColor grayColor].CGColor;
+        toast.layer.shadowOffset=CGSizeMake(2, 2);
+        toast.layer.shadowOpacity=1;
+    }
+    [window addSubview:self.toastLable];
+}
 
 - (void)event:(UITapGestureRecognizer *)gesture
 {
     CGRect rect = self.frame;
     CGPoint center = self.center ;
+    double delayInSeconds = 3.0;
+    //创建一个调度时间,相对于默认时钟或修改现有的调度时间。
+    dispatch_time_t delayInNanoSeconds =dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+     dispatch_queue_t concurrentQueue =dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    //推迟两纳秒执行
+   
+   
     if(self.isOpen){
        [[HttpServerLogger shared]stopServer];
+        
     }else{
         [[HttpServerLogger shared]startServer];
+        [ self showToastView];
+        if(self.toastLable.superview){
+            dispatch_after(delayInNanoSeconds, concurrentQueue, ^(void){
+                [self.toastLable removeFromSuperview];
+            });
+        }
     }
     self.isOpen = !self.isOpen;
     self.label.text = self.isOpen?@"关":@"开";

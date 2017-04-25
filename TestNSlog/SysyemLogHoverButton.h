@@ -11,4 +11,5 @@
 @interface SysyemLogHoverButton : UIView
 @property(nonatomic,strong)UILabel *label;
 @property(nonatomic)BOOL isOpen;
+@property(nonatomic,strong)UILabel *toastLable;
 @end
