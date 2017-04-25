@@ -1,18 +1,18 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 Pod::Spec.new do |s|
-  s.name             = "dayi"
+  s.name             = "ServerLog"
   s.version          = "0.1.0"
-  s.summary          = "The Frist Public Classes of dayi iOS"
+  s.summary          = "The Frist Public Classes of ServerLog iOS"
   s.description      = <<-DESC
-                      The Frist Public Classes of dayi iOS`.
+                      The Frist Public Classes of ServerLog iOS`.
                        DESC
-  s.homepage         = "http://www.dayi.im"
+  s.homepage         = "http://www.ServerLog.im"
   s.license          = 'MIT'
   s.author           = { "TonyYo" => "lintong320@gmail.com" }
-  s.source           = { :git => "git@test.dayi.im:yl/dayi.git", :tag => s.version.to_s }
+  s.source           = { :git => "git@github.com:Darkhorse-Fraternity/TestLog.git", :tag => s.version.to_s }
   s.platform         = :ios, '7.1'
   s.requires_arc     = true
-  s.module_name      = "dayi"
+  s.module_name      = "ServerLog"
   s.frameworks       = 'UIKit', 'Foundation'
 
   s.subspec 'Base' do |cs|
@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'All' do |cs|
-    cs.dependency 'dayi/Base'
+    cs.dependency 'ServerLog/Base'
   end
 
   s.default_subspecs = 'All'
