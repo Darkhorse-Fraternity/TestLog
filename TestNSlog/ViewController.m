@@ -8,10 +8,6 @@
 
 #import "ViewController.h"
 
-#import "GCDWebServer.h"
-#import "GCDWebServerDataResponse.h"
-#import "HttpServerLogger.h"
-
 
 static NSData* _newlineData = nil;
 @interface ViewController ()
@@ -34,12 +30,6 @@ static NSData* _newlineData = nil;
     
     fprintf (stderr, "%s\n", "ViewController viewDidLoad222");
     
-    _rightItemBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_rightItemBtn setTitle:@"开启服务" forState:UIControlStateNormal];
-    [_rightItemBtn addTarget:self action:@selector(rightItemBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-    _rightItemBtn.frame = CGRectMake(0, 0, 60, 30);
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_rightItemBtn];
-  
     
     NSLog(@"ViewController viewDidLoad222");
     
@@ -49,17 +39,6 @@ static NSData* _newlineData = nil;
    
 }
 
-- (void)rightItemBtnAction :(UIButton *)sender {
-    NSString *text = [sender titleForState:UIControlStateNormal];
-    if ([text isEqualToString:@"开启服务"]) {
-        [[HttpServerLogger shared]startServer];
-        [sender setTitle:@"关闭服务" forState:UIControlStateNormal];
-    }
-    else{
-        [[HttpServerLogger shared]stopServer];
-        [sender setTitle:@"开启服务" forState:UIControlStateNormal];
-    }
-}
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

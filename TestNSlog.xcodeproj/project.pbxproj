@@ -16,6 +16,7 @@
 		09FCE9BD1D10111800DBE4C5 /* SystemLogMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FCE9BC1D10111800DBE4C5 /* SystemLogMessage.m */; };
 		09FCE9C41D10195B00DBE4C5 /* SystemLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FCE9C31D10195B00DBE4C5 /* SystemLogManager.m */; };
 		5886B8431E57003B4767F0F4 /* libPods-TestNSlog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AB23BAD439E3D110AB71F70D /* libPods-TestNSlog.a */; };
+		CC2F32921EAF25600041E097 /* SysyemLogHoverButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CC2F32911EAF25600041E097 /* SysyemLogHoverButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,8 @@
 		09FCE9C21D10195B00DBE4C5 /* SystemLogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemLogManager.h; sourceTree = "<group>"; };
 		09FCE9C31D10195B00DBE4C5 /* SystemLogManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemLogManager.m; sourceTree = "<group>"; };
 		AB23BAD439E3D110AB71F70D /* libPods-TestNSlog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TestNSlog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC2F32901EAF25600041E097 /* SysyemLogHoverButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SysyemLogHoverButton.h; sourceTree = "<group>"; };
+		CC2F32911EAF25600041E097 /* SysyemLogHoverButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SysyemLogHoverButton.m; sourceTree = "<group>"; };
 		F0E21BAAE7CA1C03901FEB99 /* Pods-TestNSlog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestNSlog.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TestNSlog/Pods-TestNSlog.debug.xcconfig"; sourceTree = "<group>"; };
 		FF7629A606A954AD6A0B6410 /* Pods-TestNSlog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestNSlog.release.xcconfig"; path = "Pods/Target Support Files/Pods-TestNSlog/Pods-TestNSlog.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -101,6 +104,8 @@
 				09FCE9C31D10195B00DBE4C5 /* SystemLogManager.m */,
 				09FCE9BB1D10111800DBE4C5 /* SystemLogMessage.h */,
 				09FCE9BC1D10111800DBE4C5 /* SystemLogMessage.m */,
+				CC2F32901EAF25600041E097 /* SysyemLogHoverButton.h */,
+				CC2F32911EAF25600041E097 /* SysyemLogHoverButton.m */,
 			);
 			name = Log;
 			sourceTree = "<group>";
@@ -138,12 +143,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 099A57B81D0E8E18007AFAFE /* Build configuration list for PBXNativeTarget "TestNSlog" */;
 			buildPhases = (
-				2A124A018B7995A6033687B0 /* 📦 Check Pods Manifest.lock */,
+				2A124A018B7995A6033687B0 /* [CP] Check Pods Manifest.lock */,
 				099A57A01D0E8E17007AFAFE /* Sources */,
 				099A57A11D0E8E17007AFAFE /* Frameworks */,
 				099A57A21D0E8E17007AFAFE /* Resources */,
-				910730FC38F711D93AF4E654 /* 📦 Embed Pods Frameworks */,
-				34A9B7FC80E2EE507B98D4B1 /* 📦 Copy Pods Resources */,
+				910730FC38F711D93AF4E654 /* [CP] Embed Pods Frameworks */,
+				34A9B7FC80E2EE507B98D4B1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -199,29 +204,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2A124A018B7995A6033687B0 /* 📦 Check Pods Manifest.lock */ = {
+		2A124A018B7995A6033687B0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		34A9B7FC80E2EE507B98D4B1 /* 📦 Copy Pods Resources */ = {
+		34A9B7FC80E2EE507B98D4B1 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -229,14 +234,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TestNSlog/Pods-TestNSlog-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		910730FC38F711D93AF4E654 /* 📦 Embed Pods Frameworks */ = {
+		910730FC38F711D93AF4E654 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -252,6 +257,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				09FCE9B91D1009B000DBE4C5 /* HttpServerLogger.m in Sources */,
+				CC2F32921EAF25600041E097 /* SysyemLogHoverButton.m in Sources */,
 				09FCE9BD1D10111800DBE4C5 /* SystemLogMessage.m in Sources */,
 				09FCE9C41D10195B00DBE4C5 /* SystemLogManager.m in Sources */,
 				099A57AF1D0E8E18007AFAFE /* ViewController.m in Sources */,
