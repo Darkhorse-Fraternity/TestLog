@@ -145,7 +145,7 @@
     double delayInSeconds = 3.0;
     //创建一个调度时间,相对于默认时钟或修改现有的调度时间。
     dispatch_time_t delayInNanoSeconds =dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-     dispatch_queue_t concurrentQueue =dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+     dispatch_queue_t concurrentQueue =dispatch_get_main_queue();
     //推迟两纳秒执行
    
    
