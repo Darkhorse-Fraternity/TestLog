@@ -5,17 +5,17 @@
 
 
  > 平时我们写代码的时候,为了调试方便,总是会在代码中写入很多的NSLog(也可能是其它的日志框架等,例如大名鼎鼎的[CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack)),但是我们对于NSLog到底了解多少?NSLog的信息为什么Xcode能够获取的到?我们能自己写个程序获取所有的NSlog么?NSLog写入的信息到底在哪里?
- 
- 
+
+
 ## NSLog输出到哪?
 
  我们都知道,NSLog是一个C函数,它的函数声明是
 ```objc
- void NSLog(NSString *format, ...) 
+ void NSLog(NSString *format, ...)
 ```
 
  系统对其说明是:**Logs an error message to the Apple System Log facility.**,它是用来输出信息到标准的Error控制台上去.其内部其实是使用Apple System Log(ASL:苹果自己实现的输出日志的一套接口)的API.在iOS真机设备上,使用ASL记录的log被缓存在一个文件中,直到设备被重启.
- 
+
 这里提到的ASL,都是放在ash.h这个头文件中,这套api可以获取指定的日志数据.具体可以参考[ASL参考](http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPa)
 
 从上面可以直到,NSLog默认被系统输出到了一个文件中,这个文件是哪个呢?**NSLog默认的输出到了系统的  /var/log/syslog这个文件中**,当然了,如果你的机器没有越狱,你是查看不了这个文件的.我手机是越狱的,于是乎验证了下,使用iTools等工具将真机的/var/log/syslog文件导出,下面就是这个文件的部分内容的截取
@@ -49,7 +49,7 @@
 ViewController viewDidLoad222
 ```
   由于fprintf并不会像NSLog那样,在内部调用ASL接口,所以只是单纯的输出信息,并没有添加日期,进程名,进程id等,也不会自动换行.
-  
+
 ## NSLog的重定向
 既然NSLog是写到**STDERR_FILENO**中去的,那么根据Unix的知识,我们可以重定向这个文件,让NSLog直接写到文件中去
 ``` objc
@@ -68,9 +68,9 @@ ViewController viewDidLoad222
 
 也可以开启app的文件夹itunse共享
 > 配置共享文件夹：
-> 
+>
 在应用程序的Info.plist文件中添加UIFileSharingEnabled键，并将键值设置为YES。将您希望共享的文件放在应用程序的Documents目录。一旦设备插入到用户计算机，iTunes 9.1就会在选中设备的Apps标签中显示一个File Sharing区域。此后，用户就可以向该目录添加文件或者将文件移动到桌面计算机中  
-> 
+>
 >> 就是说，一旦设备连接上电脑，可以通过iTune查看指定应用程序的共享文件夹，将文件拷贝到你的电脑上看
 
 一般我们都会在应用中放置一个开关,开启或者关闭Log日志的重定向,在上面,我们使用标准C的**freopen**将stderr重定向到我们的文件中了,那么问题来了,怎么重定向回去呢???
@@ -134,7 +134,7 @@ dup2(originH1, STDERR_FILENO);//就可以了
     dup2(fildes[1], fd);  // Duplicate write end of pipe "onto" fd (this closes fd)
     close(fildes[1]);  // Close original write end of pipe
     fd = fildes[0];  // We can now monitor the read end of the pipe
-    
+
     char* buffer = malloc(1024);
     NSMutableData* data = [[NSMutableData alloc] init];
     fcntl(fd, F_SETFL, O_NONBLOCK);
@@ -144,7 +144,7 @@ dup2(originH1, STDERR_FILENO);//就可以了
     });
     dispatch_source_set_event_handler(source, ^{
         @autoreleasepool {
-            
+
             while (1) {
                 ssize_t size = read(fd, buffer, 1024);
                 if (size <= 0) {
@@ -159,7 +159,7 @@ dup2(originH1, STDERR_FILENO);//就可以了
             //printf("aString = %s",[aString UTF8String]);
             //NSLog(@"aString = %@",aString);
             //读到了日志,可以进行我们需要的各种操作了
-            
+
         }
     });
     dispatch_resume(source);
@@ -184,20 +184,20 @@ ASL读取log的核心代码
 + (NSMutableArray<SystemLogMessage *> *)allLogMessagesForCurrentProcess
 {
     asl_object_t query = asl_new(ASL_TYPE_QUERY);
-    
+
     // Filter for messages from the current process. Note that this appears to happen by default on device, but is required in the simulator.
     NSString *pidString = [NSString stringWithFormat:@"%d", [[NSProcessInfo processInfo] processIdentifier]];
     asl_set_query(query, ASL_KEY_PID, [pidString UTF8String], ASL_QUERY_OP_EQUAL);
-    
+
     aslresponse response = asl_search(NULL, query);
     aslmsg aslMessage = NULL;
-    
+
     NSMutableArray *logMessages = [NSMutableArray array];
     while ((aslMessage = asl_next(response))) {
         [logMessages addObject:[SystemLogMessage logMessageFromASLMessage:aslMessage]];
     }
     asl_release(response);
-    
+
     return logMessages;
 }
 
@@ -206,7 +206,7 @@ ASL读取log的核心代码
 +(instancetype)logMessageFromASLMessage:(aslmsg)aslMessage
 {
     SystemLogMessage *logMessage = [[SystemLogMessage alloc] init];
-    
+
     const char *timestamp = asl_get(aslMessage, ASL_KEY_TIME);
     if (timestamp) {
         NSTimeInterval timeInterval = [@(timestamp) integerValue];
@@ -217,22 +217,22 @@ ASL读取log的核心代码
         logMessage.timeInterval = timeInterval;
         logMessage.date = [NSDate dateWithTimeIntervalSince1970:timeInterval];
     }
-    
+
     const char *sender = asl_get(aslMessage, ASL_KEY_SENDER);
     if (sender) {
         logMessage.sender = @(sender);
     }
-    
+
     const char *messageText = asl_get(aslMessage, ASL_KEY_MSG);
     if (messageText) {
         logMessage.messageText = @(messageText);//NSLog写入的文本内容
     }
-    
+
     const char *messageID = asl_get(aslMessage, ASL_KEY_MSG_ID);
     if (messageID) {
         logMessage.messageID = [@(messageID) longLongValue];
     }
-    
+
     return logMessage;
 }
 
@@ -279,13 +279,13 @@ github上比较知名的有
                                   requestClass:[GCDWebServerRequest class]
                                   processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
                                       return [weakSelf createResponseBody:request];
-                                      
-                                      
+
+
                                   }];
-        
-        
+
+
         NSLog(@"Visit %@ in your web browser", _webServer.serverURL);
-        
+
     }
     return _webServer;
 }
@@ -293,7 +293,7 @@ github上比较知名的有
      // Use convenience method that runs server on port 8080
     // until SIGINT (Ctrl-C in Terminal) or SIGTERM is received
     [self.webServer startWithPort:8080 bonjourName:nil];
-    
+
 }
 
 - (void)stopServer {
@@ -305,7 +305,7 @@ github上比较知名的有
 //当浏览器请求的时候,返回一个由日志信息组装成的html返回给浏览器
 - (GCDWebServerDataResponse *)createResponseBody :(GCDWebServerRequest* )request{
     GCDWebServerDataResponse *response = nil;
-    
+
     NSString* path = request.path;
     NSDictionary* query = request.query;
     //NSLog(@"path = %@,query = %@",path,query);
@@ -382,19 +382,19 @@ github上比较知名的有
         [string appendString:@"<body>"];
         [string appendString:@"<table><tbody id=\"content\">"];
         [self _appendLogRecordsToString:string afterAbsoluteTime:0.0];
-    
+
         [string appendString:@"</tbody></table>"];
         [string appendString:@"<div id=\"footer\"></div>"];
         [string appendString:@"</body>"];
         [string appendString:@"</html>"];
-        
-        
+
+
     }
     else if ([path isEqualToString:@"/log"] && query[@"after"]) {
         string = [[NSMutableString alloc] init];
         double time = [query[@"after"] doubleValue];
         [self _appendLogRecordsToString:string afterAbsoluteTime:time];
-        
+
     }
     else {
        string = [@" <html><body><p>无数据</p></body></html>" mutableCopy];
@@ -418,7 +418,7 @@ github上比较知名的有
         }
     }];
     [string appendFormat:@"<tr id=\"maxTime\" data-value=\"%f\"></tr>", maxTime];
-    
+
 }
 
 
@@ -426,8 +426,8 @@ github上比较知名的有
     NSMutableString *string = [[NSMutableString alloc] init];
     [string appendFormat:@"<td>%@</td> <td>%@</td> <td>%@</td>",[SystemLogMessage logTimeStringFromDate:msg.date ],msg.sender, msg.messageText];
     return string;
-    
-    
+
+
 }
 @end
 ```
@@ -455,3 +455,12 @@ ASL的swift版本的封装[CleanroomASLswift](https://github.com/emaloney/Cleanr
 [read-log-messages-posted-to-the-device-console](http://stackoverflow.com/questions/6144347/using-objective-c-to-read-log-messages-posted-to-the-device-console)  
 [readout-at-runtime-in-an-application](http://stackoverflow.com/questions/7150849/how-can-i-get-a-console-readout-at-runtime-in-an-application)  
 [how-to-nslog-into-a-file](http://stackoverflow.com/questions/7271528/how-to-nslog-into-a-file)
+
+
+# fix ios 真机无法读取的bug
+1、将printf 方法重写 使用nslog 输出
+2、 将nslog 重定向输出到 .log 中
+3、 启动后将 .log 重新输出
+4、 使用load+ 通知插入代码 不对原代码进行破坏
+5、 pod "ServerLog", :git => "https://github.com/Darkhorse-Fraternity/TestLog.git",:configurations => ['Debug']
+引入，['Debug'] 是指只在debug 环境下引入代码。
