@@ -46,12 +46,18 @@ int printf(const char * __restrict format, ...)
      object:nil
      queue:nil
      usingBlock:^(NSNotification *note) {
-         
+        [[NSNotificationCenter defaultCenter] removeObserver:observer];
+         if(isatty(STDOUT_FILENO)) {  //真机调试
+             return;
+         }
+         UIDevice *device = [UIDevice currentDevice];
+         if([[device model] hasSuffix:@"Simulator"]){ //在模拟器不保存到文件中
+             return;
+         }
+         //只在真机并且离线的时候执行以下命令
          [self redirectLog];
          SysyemLogHoverButton *btn = [SysyemLogHoverButton shared];
-        
          [[[UIApplication sharedApplication]keyWindow]addSubview:btn];
-         [[NSNotificationCenter defaultCenter] removeObserver:observer];
      }];
   
 }
