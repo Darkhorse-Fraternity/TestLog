@@ -8,7 +8,36 @@
 
 #import "SysyemLogHoverButton.h"
 #import "HttpServerLogger.h"
+
+
+
+int printf(const char * __restrict format, ...)
+{
+    va_list args;
+    va_start(args,format);
+    NSLogv([NSString stringWithUTF8String:format], args) ;
+    va_end(args);
+    return 1;
+}
+
 @implementation SysyemLogHoverButton
+
+
++ (void)redirectLog
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
+    NSString *fileName = [NSString stringWithFormat:@"dr.log"];// 注意不是NSData!
+    NSString *logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
+    // 先删除已经存在的文件
+    NSFileManager *defaultManager = [NSFileManager defaultManager];
+    [defaultManager removeItemAtPath:logFilePath error:nil];
+    
+    // 将log输入到文件
+    freopen([logFilePath cStringUsingEncoding:NSASCIIStringEncoding], "a+", stdout);
+    freopen([logFilePath cStringUsingEncoding:NSASCIIStringEncoding], "a+", stderr);
+}
+
 + (void)load
 {
     __weak id observer =
@@ -17,6 +46,8 @@
      object:nil
      queue:nil
      usingBlock:^(NSNotification *note) {
+         
+         [self redirectLog];
          SysyemLogHoverButton *btn = [SysyemLogHoverButton shared];
         
          [[[UIApplication sharedApplication]keyWindow]addSubview:btn];

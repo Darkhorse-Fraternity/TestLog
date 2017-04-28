@@ -163,15 +163,54 @@
 
 - (void)_appendLogRecordsToString:(NSMutableString*)string afterAbsoluteTime:(double)time {
     __block double maxTime = time;
-    NSArray<SystemLogMessage *>  *allMsg = [SystemLogManager allLogAfterTime:time];
-    [allMsg enumerateObjectsUsingBlock:^(SystemLogMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        const char* style = "color: dimgray;";
-        NSString* formattedMessage = [self displayedTextForLogMessage:obj];
-        [string appendFormat:@"<tr style=\"%s\">%@</tr>", style, formattedMessage];
-        if (obj.timeInterval > maxTime) {
-            maxTime = obj.timeInterval ;
+//    NSArray<SystemLogMessage *>  *allMsg = [SystemLogManager allLogAfterTime:time];
+//    [allMsg enumerateObjectsUsingBlock:^(SystemLogMessage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        const char* style = "color: dimgray;";
+//        NSString* formattedMessage = [self displayedTextForLogMessage:obj];
+//        [string appendFormat:@"<tr style=\"%s\">%@</tr>", style, formattedMessage];
+//        if (obj.timeInterval > maxTime) {
+//            maxTime = obj.timeInterval ;
+//        }
+//    }];
+    
+    
+    //在这边读取log 重定义的消息
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDirectory = [paths objectAtIndex:0];
+    NSString *fileName = [NSString stringWithFormat:@"dr.log"];// 注意不是NSData!
+    NSString *logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
+    NSString *resultStr = [NSString stringWithContentsOfFile:logFilePath encoding:NSUTF8StringEncoding error:nil];
+    NSArray *lines = [resultStr componentsSeparatedByString:@"\n"];
+    [lines enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+     
+        NSArray *strs = [obj componentsSeparatedByString:@" "];
+        //2017-04-28 09:36:51.922105
+        if(strs.count < 2 ) return ;
+    
+//        NSLog(@"%@",obj);
+        
+        
+        NSString *finishTimeString = [NSString stringWithFormat:@"%@T%@",strs[0],strs[1]];
+//        NSLog(@"time:%@",finishTimeString);
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSSSS"];
+        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:28800]];
+        NSDate *currentDate = [dateFormatter dateFromString:finishTimeString];
+        NSTimeInterval interval = [currentDate timeIntervalSince1970];
+//        NSLog(@"time:%f",interval);
+        
+      
+        if (interval > maxTime) {
+            maxTime = interval ;
+        }else{
+            return ;
         }
+        
+        const char* style = "color: dimgray;";
+        NSString* formattedMessage = [self displayedTextForMessage:obj];
+        [string appendFormat:@"<tr style=\"%s\">%@</tr>", style, formattedMessage];
     }];
+    
     [string appendFormat:@"<tr id=\"maxTime\" data-value=\"%f\"></tr>", maxTime];
     
 }
@@ -184,4 +223,13 @@
     
     
 }
+
+
+- (NSString *)displayedTextForMessage:(NSString *)msg{
+    NSMutableString *string = [[NSMutableString alloc] init];
+    [string appendFormat:@"<td>%@</td>",msg];
+    return string;
+}
+
+
 @end

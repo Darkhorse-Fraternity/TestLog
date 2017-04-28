@@ -42,6 +42,9 @@
     return logMessage;
 }
 
+
+
+
 - (BOOL)isEqual:(id)object
 {
     return [object isKindOfClass:[SystemLogMessage class]] && self.messageID == [object messageID];

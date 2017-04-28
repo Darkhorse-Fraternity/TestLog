@@ -53,8 +53,8 @@ static NSData* _newlineData = nil;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *str = [NSString stringWithFormat:@"didSelectRowAtIndexPath index:%@",indexPath];
-    NSLog(@"didSelectRowAtIndexPath index:%@",indexPath);
-    printf("didSelectRowAtIndexPath");
+    NSLog(@"didSelectRowAtIndexPath index:%@,from NSLog",indexPath);
+    printf("didSelectRowAtIndexPath from printf");
     if (indexPath.row % 2 == 0) {
         
     }
