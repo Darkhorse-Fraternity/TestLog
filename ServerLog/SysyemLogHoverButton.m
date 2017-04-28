@@ -50,10 +50,10 @@ int printf(const char * __restrict format, ...)
          if(isatty(STDOUT_FILENO)) {  //真机调试
              return;
          }
-         UIDevice *device = [UIDevice currentDevice];
-         if([[device model] hasSuffix:@"Simulator"]){ //在模拟器不保存到文件中
-             return;
-         }
+#if (TARGET_IPHONE_SIMULATOR)
+         // 在模拟器的情况下、
+         return;
+#endif
          //只在真机并且离线的时候执行以下命令
          [self redirectLog];
          SysyemLogHoverButton *btn = [SysyemLogHoverButton shared];
